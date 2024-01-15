@@ -1,0 +1,16 @@
+{
+    "FRM-41082": {
+      "Module": "MRP",
+      "URL": "https://support.oracle.com/epmos/faces/DocumentDisplay?_afrLoop=454635019320461&id=2937694.1&displayIndex=27&_afrWindowMode=0&_adf.ctrl-state=1bcmlc04p6_1606",
+      "Applies To": "Oracle Materials Requirement Planning - Version 12.1.3 and later\nInformation in this document applies to any platform.",
+      "Symptoms": "When attempting to navigate to Materials Requirement Planning (MRP) workbench,\nthe following error occurs.\n\nERROR\n-----------------------\n\nFRM-41082: Cannot resize item: position of item places it off of canvas\n\nSTEPS\n-----------------------\nThe issue can be reproduced at will with the following steps:\n\n1. Navigate to MRP workbench.\n\nNav: Material Planner (R) -> MRP -> Workbench.\n\n2. See that the form throws the above error.",
+      "Cause": "Incorrect user preference setting.\n\nThe setting \"Field Width\" should not be set to 0. It should be a positive value. The default value is 10.",
+      "Solution": "Please perform the following in a test instance first prior to migrating the solution to higher instances:\n\n1. Run the below data fix:\nselect user_id\nfrom fnd_user\nwhere user_name = '&User_Name';\n\nUpdate MRP_WORKBENCH_DISPLAY_OPTIONS\nset SUMMARY_FIELD_WIDTH = 10\nWhere USER_ID = &user_id_from_sql_1;\n\nCommit;\n\n 2. Subsequently log into application and retest your issue.",
+      "Last Update": "2023-03-25 00:00:00",
+      "check_list": {
+        "query1": ["Verify the 'Field Width' user preference for the affected user", "SELECT FU.USER_ID, FUP.PREFERENCE_NAME, FUP.PREFERENCE_VALUE FROM FND_USER_PREFERENCES FUP, FND_USER FU WHERE FUP.USER_NAME = '&USER_NAME' AND FUP.PREFERENCE_NAME = '&PREFERENCE_NAME' AND FUP.USER_NAME = FU.USER_NAME;"],
+        "query2": ["Check the current setting of 'SUMMARY_FIELD_WIDTH' in MRP_WORKBENCH_DISPLAY_OPTIONS", "SELECT USER_ID, SUMMARY_FIELD_WIDTH FROM MRP_WORKBENCH_DISPLAY_OPTIONS WHERE USER_ID = (SELECT USER_ID FROM FND_USER WHERE USER_NAME = '&User_Name');"],
+        "query3": ["SELECT FU.USER_ID, FUP.PREFERENCE_NAME, FUP.PREFERENCE_VALUE FROM FND_USER_PREFERENCES FUP, FND_USER FU WHERE FUP.USER_NAME = '&User_Name'  AND  FUP.USER_NAME = FU.USER_NAME;"]
+      },
+      "place_holder": ["&User_Name", "&user_id_from_sql_1","&PREFERENCE_NAME"]
+    }}
