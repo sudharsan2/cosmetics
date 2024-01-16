@@ -28,9 +28,9 @@ from tkinter import messagebox
 import re
 import requests
 from langchain.text_splitter import CharacterTextSplitter
-chat = ChatOpenAI(openai_api_key="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",temperature=0,)
+chat = ChatOpenAI(openai_api_key="api_key",temperature=0,)
 import os
-os.environ["OPENAI_API_KEY"]="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"
+os.environ["OPENAI_API_KEY"]="api_key"
 from langchain.embeddings import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings()
 from datetime import datetime
@@ -62,39 +62,30 @@ def error_details_generator(error_info, error_code):
 
 class error_code_response(APIView):
     def post(self, request):
-        input = request.data.get('user_input', None)
-        return Response({"input":input})
-    
-    def get(self,request):
-        with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json','r') as file:
-            error_data = json.load(file)
-        instance = error_code_response()
-        input_data = instance.post(request).data.get('input', None)
+        input_data = request.data.get('user_input', None)
 
-        result =error_details_generator(error_data, input_data)
-        context ={"result":result}
+        with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json', 'r') as file:
+            error_data = json.load(file)
+
+        result = error_details_generator(error_data, input_data)
+        place_holder= error_data[input_data]['place_holder']
+        context = {"result": {"error_result":result,"place_holder":place_holder}}
         return Response(context)
+
     
 class place_holders(APIView):
-    def get(self, request):
-        instance = error_code_response()
-        input_data = instance.post(request).data.get('input', None)
-        with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json','r') as file:
-            error_data = json.load(file)
-        place_holder= error_data[input_data]['place_holder']
-        return Response({"place_holder":place_holder})
     
 
     def post(self, request):
-        input = request.data.get('place_holders',None)
+        input_place_holders = request.data.get('place_holders',None)
         with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json','r') as file:
             error_data = json.load(file)
         instance = error_code_response()
-        input_data = instance.post(request).data.get('input', None)
+        input_data = instance.post(request).data.get('user_input', None)
         place_holder = error_data[input_data]['place_holder']
         replaced_queries=[]
         for key , values in error_data[input_data]['check_list'].items():
-            for i in range(len(input)):
+            for i in range(len(input_place_holders)):
                 if place_holder[i] in values[1]:
                     values[1]= values[1].replace(place_holder[i],input[i])
                 a= values[1]
