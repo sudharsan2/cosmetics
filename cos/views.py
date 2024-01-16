@@ -4,7 +4,7 @@ from rest_framework import status
 # Create your views here.
 from django.shortcuts import render
 from django.http import JsonResponse
-from django.conf import settings
+# from django.conf import settings
 from langchain.chat_models import ChatOpenAI
 from langchain import PromptTemplate, LLMChain
 from langchain.prompts.chat import (
@@ -35,7 +35,7 @@ from langchain.embeddings import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings()
 from datetime import datetime
 import json
-import cx_Oracle
+# import cx_Oracle
 # Create your views here.
 
 def error_details_generator(error_info, error_code):
@@ -74,44 +74,47 @@ class error_code_response(APIView):
 
     
 class place_holders(APIView):
-    
 
     def post(self, request):
-        input_place_holders = request.data.get('place_holders',None)
-        with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json','r') as file:
+        user_input = request.data.get('user_input', None)
+        input_place_holders = request.data.get('place_holders', None)
+
+        with open('/Users/smartass/coding/python/django/cosmetics/cosmetics/cos/error.json', 'r') as file:
             error_data = json.load(file)
-        instance = error_code_response()
-        input_data = instance.post(request).data.get('user_input', None)
-        place_holder = error_data[input_data]['place_holder']
-        replaced_queries=[]
-        for key , values in error_data[input_data]['check_list'].items():
-            for i in range(len(input_place_holders)):
+
+        place_holder = error_data[user_input]['place_holder']
+        replaced_queries = []
+
+        for key , values in error_data[user_input]['check_list'].items():
+            for i in range(len(place_holder)):
                 if place_holder[i] in values[1]:
-                    values[1]= values[1].replace(place_holder[i],input[i])
+                    values[1]= values[1].replace(place_holder[i],input_place_holders[i])
                 a= values[1]
+
             replaced_queries.append(a)
-        query_results=[]
 
-
-        for query in replaced_queries:
-            wrapped_query= f"SELECT CASE WHEN EXISTS ({query}) THEN 0 ELSE 1 END AS result FROM dual;"
-            cleaned_query = wrapped_query.replace(',', '').replace(';', '').replace('"', '')
+        # query_results=[]
  
-            try:
-                oracle_db_config = settings.DATABASES['oracledb']
-                with cx_Oracle.connect(
-                    user=oracle_db_config['USER'],
-                    password=oracle_db_config['PASSWORD'],
-                    dsn=f"{oracle_db_config['HOST']}:{oracle_db_config['PORT']}/{oracle_db_config['NAME']}",
-                    encoding='UTF-8'
-                ) as connection:
-                    cursor = connection.cursor()
-                    
-                    cursor.execute(cleaned_query)
-                    result = cursor.fetchall()
-                    query_results.append({'query': query, 'result': result})
-            except cx_Oracle.DatabaseError as e:
-                error, = e.args
-                query_results.append({'query': query, 'error': f"Error executing query: {error.message}"})
-        return Response({'query_results': query_results})  
+ 
+        # for query in replaced_queries:
+        #     wrapped_query= f"SELECT CASE WHEN EXISTS ({query}) THEN 0 ELSE 1 END AS result FROM dual;"
+        #     cleaned_query = wrapped_query.replace(',', '').replace(';', '').replace('"', '')
+ 
+        #     try:
+        #         oracle_db_config = settings.DATABASES['oracledb']
+        #         with cx_Oracle.connect(
+        #             user=oracle_db_config['USER'],
+        #             password=oracle_db_config['PASSWORD'],
+        #             dsn=f"{oracle_db_config['HOST']}:{oracle_db_config['PORT']}/{oracle_db_config['NAME']}",
+        #             encoding='UTF-8'
+        #         ) as connection:
+        #             cursor = connection.cursor()
+                   
+        #             cursor.execute(cleaned_query)
+        #             result = cursor.fetchall()
+        #             query_results.append({'query': query, 'result': result})
+        #     except cx_Oracle.DatabaseError as e:
+        #         error, = e.args
+        #         query_results.append({'query': query, 'error': f"Error executing query: {error.message}"})
+        return Response({'replaced_queries': replaced_queries})
 
