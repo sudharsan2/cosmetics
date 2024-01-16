@@ -75,7 +75,7 @@ class error_code_response(APIView):
         context ={"result":result}
         return Response(context)
     
-class place_holders:
+class place_holders(APIView):
     def get(self, request):
         instance = error_code_response()
         input_data = instance.post(request).data.get('input', None)
@@ -101,7 +101,7 @@ class place_holders:
             replaced_queries.append(a)
         query_results=[]
 
-        
+
         for query in replaced_queries:
             wrapped_query= f"SELECT CASE WHEN EXISTS ({query}) THEN 0 ELSE 1 END AS result FROM dual;"
             cleaned_query = wrapped_query.replace(',', '').replace(';', '').replace('"', '')
