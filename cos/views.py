@@ -64,7 +64,7 @@ class error_code_response(APIView):
     def post(self, request):
         input_data = request.data.get('user_input', None)
 
-        with open('cosmetics/cos/error.json', 'r') as file:
+        with open('cos/error.json', 'r') as file:
             error_data = json.load(file)
 
         result = error_details_generator(error_data, input_data)
@@ -79,7 +79,7 @@ class place_holders(APIView):
         user_input = request.data.get('user_input', None)
         input_place_holders = request.data.get('place_holders', None)
 
-        with open('cosmetics/cos/error.json', 'r') as file:
+        with open('cos/error.json', 'r') as file:
             error_data = json.load(file)
 
         place_holder = error_data[user_input]['place_holder']
