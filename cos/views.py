@@ -1,39 +1,38 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework import status
+
 # Create your views here.
 from django.shortcuts import render
-from django.http import JsonResponse
+
 # from django.conf import settings
 from langchain.chat_models import ChatOpenAI
 from langchain import PromptTemplate, LLMChain
 from langchain.prompts.chat import (
     ChatPromptTemplate,
     SystemMessagePromptTemplate,
-    AIMessagePromptTemplate,
-    HumanMessagePromptTemplate,
+    
 )
-from langchain.schema import AIMessage, HumanMessage, SystemMessage
+# from langchain.schema import AIMessage, HumanMessage, SystemMessage
 from langchain.chains.openai_functions import (
     create_openai_fn_chain,
     create_structured_output_chain,
 )
-from langchain.output_parsers import PydanticOutputParser
-from pydantic import BaseModel, Field
-from langchain.output_parsers import CommaSeparatedListOutputParser
-import tkinter as tk
+# from langchain.output_parsers import PydanticOutputParser
+# from pydantic import BaseModel, Field
+# from langchain.output_parsers import CommaSeparatedListOutputParser
+# import tkinter as tk
 from langchain.vectorstores import FAISS
 from langchain.document_loaders import TextLoader
-from tkinter import messagebox
-import re
-import requests
-from langchain.text_splitter import CharacterTextSplitter
-chat = ChatOpenAI(openai_api_key="api_key",temperature=0,)
+# from tkinter import messagebox
+# import re
+# import requests
+# from langchain.text_splitter import CharacterTextSplitter
+chat = ChatOpenAI(openai_api_key="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",temperature=0,)
 import os
-os.environ["OPENAI_API_KEY"]="api_key"
+os.environ["OPENAI_API_KEY"]="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"
 from langchain.embeddings import OpenAIEmbeddings
 embeddings = OpenAIEmbeddings()
-from datetime import datetime
+# from datetime import datetime
 import json
 # import cx_Oracle
 # Create your views here.
@@ -57,8 +56,9 @@ def error_details_generator(error_info, error_code):
     result = chat(request)
     result = result.content
     return result
-#use the print to check the output for reference
 
+def home(request):
+    return render(request, 'cos/home.html',)
 
 class error_code_response(APIView):
     def post(self, request):

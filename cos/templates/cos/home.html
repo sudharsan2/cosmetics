@@ -1,1 +1,266 @@
-<h1>{{result}}</h1>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script>
+        document.addEventListener("readystatechange",(event) =>{
+    if(event.target.readyState==="complete"){
+        initApp();
+        
+    }
+});
+
+const initApp = () =>{
+    console.log("ReadyState");
+
+    
+    
+    const sendBtn = document.getElementById("send-btn")
+
+    sendBtn.addEventListener("click",sendOracleDBErrorCode);
+
+}
+async function sendOracleDBErrorCode(e){
+    document.getElementById("send-btn").disabled = true;
+    let responseMessage= document.getElementById("response-message");
+//     while (responseMessage.firstChild) {
+//     responseMessage.removeChild(responseMessage.firstChild);
+//   }
+    const messageInput = document.getElementById("message-input"); // FRM-41082
+    document.getElementById("hero").style.display = "none";
+   const loader = document.createElement("div");
+   loader.classList.add("loader");
+   responseMessage.appendChild(loader);
+  
+    const URL = "http://127.0.0.1";
+    const PORT_NUMBER = ":8000";
+    const PATH = "/cos/error_code_response";
+    
+    let data = {
+        user_input:messageInput.value,
+    }
+    messageInput.value = "";
+    const response = await fetch((URL + PORT_NUMBER + PATH),
+        {
+            method: "POST",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            body:JSON.stringify(data),
+
+        }
+    );
+    let result = await response.json();
+    console.log(result);
+    
+    
+//     while (responseMessage.firstChild) {
+//     responseMessage.removeChild(responseMessage.firstChild);
+//   }
+    
+    let error_p = document.createElement('pre');
+    responseMessage.appendChild(error_p);
+    let i=0;
+    const typeWriter = ()=> {
+        if (i < result.result.error_result.length) {
+        error_p.textContent += result.result.error_result.charAt(i);
+        i++;
+    setTimeout(typeWriter, 1);
+  }
+  else{
+    result.result.place_holder.forEach(element => {
+        let placeholder_input = document.createElement('input');
+        placeholder_input.placeholder = element;
+        placeholder_input.classList.add('label');
+        let p = document.createElement('p');
+        p.appendChild(placeholder_input);
+        responseMessage.appendChild(p);
+        
+    });
+    let btn = document.createElement("button");
+    btn.textContent = "Send";
+    btn.classList.add("btn");
+    btn.addEventListener("click",()=>{
+        
+    });
+    responseMessage.appendChild(btn);
+    document.getElementById("send-btn").disabled = false;
+responseMessage.appendChild(document.createElement('hr'));
+
+  }
+
+}
+loader.classList.remove("loader");
+typeWriter();
+
+}
+    </script>
+    <style>
+        h1{
+            letter-spacing: 5px;
+        }
+        body{
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #343540;
+            color: whitesmoke;
+        }
+        main{
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+
+        }
+        legend{
+            display: none;
+        }
+        fieldset{
+            border: none;
+        }
+        label{
+            display: none;
+        }
+        *:focus{
+            outline: none;
+        }
+
+
+        .response-section{
+            display: flex;
+            flex-grow: 1;
+            align-items: center;
+            justify-content: center;
+            margin: 1em;
+
+        }
+        .request-section{
+            display: flex;
+            flex-direction: column;
+            /* position: sticky;
+            width: 95%;
+            bottom: 0; */
+
+
+            margin: 1em;
+        }
+        .red{
+            color: red;
+        }
+        .back-red{
+            background-color: red;
+        }
+        .circle{
+            padding: 0.15em;
+            border-radius: 50%;
+        }
+
+        .message-input{
+            padding: 1em;
+            width: 90%;
+            border: none;
+            background-color: #343540;
+            border-color:white ;
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .message-container{
+            display: flex;
+            justify-content:space-around;
+            border: 1px solid hsl(235, 10%, 83%);
+            border-radius: 10px;
+            align-items: center;
+        }
+        .send-btn{
+            height: 3rem;
+            width: 3rem;
+            background-color: #343540;
+            color: whitesmoke;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            font-size: large;
+            
+        }
+        .btn{
+            color: whitesmoke;
+            background-color: red;
+            padding: 1em 1.5em;
+        }
+        .label{
+            padding: 0.75em;
+            width: 30em;
+        }
+        .back-btn{
+            background-color: #343540;
+            color: whitesmoke;
+            border: none;
+            outline: none;
+            box-shadow: none;
+            font-size: medium;
+            font-size: 1.75rem;
+        }
+        .loader {
+  border: 16px solid #f3f3f3;
+  border-radius: 50%;
+  border-top: 16px solid red;
+  border-bottom: 16px solid red;
+  width: 70px;
+  height: 70px;
+  -webkit-animation: spin 2s linear infinite;
+  animation: spin 2s linear infinite;
+}
+
+@-webkit-keyframes spin {
+  0% { -webkit-transform: rotate(0deg); }
+  100% { -webkit-transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>F<span class="back-red circle">R</span>IVO</h1>
+    </header>
+    <main>
+        <!-- <section>
+            <button class="back-btn">
+                <i class="fa">&#xf04a;</i>
+            </button>
+        </section> -->
+        <section class="response-section">
+            <div id="hero">
+                <h2>How Can I <span class="red">Help</span> You Today?</h2>
+            </div>
+            <div id="response-message">
+                
+            </div>
+        </section>
+        <section class="request-section">
+            <form>
+                <fieldset>
+                    <legend>Frivo Chat Message</legend>
+                    <p class="message-container">
+                        <label for="message">Enter the Error Code:</label>
+                        <input type="text" name="error-code" id="message-input" class="message-input" placeholder="Enter Error Code">
+                        <button type="button" id="send-btn" class="send-btn"><i class="fa fa-send"></i></button>
+                    </p>
+                </fieldset>
+            </form>
+        </section>
+    </main>
+</body>
+
+
+</html>
